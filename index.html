@@ -340,15 +340,30 @@
   }
 
   #secondPanel {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-    top: 50%;
-    bottom: auto;
-    transform: translate(-50%, -50%);
-    background: rgba(6, 8, 20, 0.55);
-    transition: opacity 1.2s ease 0.3s, visibility 1.2s ease 0.3s;
-  }
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: rgba(6, 8, 20, 0.75); /* Lo oscurecí un pelín más para que se lea mejor */
+  transition: opacity 1.2s ease 0.3s, visibility 1.2s ease 0.3s;
+  
+  /* NUEVO: Adaptación para que no se corte el texto */
+  width: 90vw;
+  max-height: 80vh; 
+  overflow-y: auto; 
+  z-index: 20; 
+}
+
+/* Opcional: Para que la barra de desplazamiento se vea bonita y combine (ponelo debajo) */
+#secondPanel::-webkit-scrollbar {
+  width: 6px;
+}
+#secondPanel::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 10px;
+}
 
   /* ------------------- */
 
@@ -456,41 +471,50 @@
   }
 
   @media (max-width: 700px) {
-    .start-button,
-    .sunflower {
-      width: 180px;
-      height: 180px;
-    }
-
-    .galaxy {
-      width: 92vw;
-      height: 92vw;
-      top: 39%;
-    }
-
-    .panel {
-      bottom: 4%;
-      padding: 16px 16px;
-    }
-    
-    .nav-arrow {
-      bottom: 18%;
-      width: 45px;
-      height: 45px;
-      font-size: 1.4rem;
-    }
-
-    .love-note {
-      max-width: 140px;
-      font-size: 0.82rem;
-      padding: 8px 11px;
-    }
-
-    .love-note.n1 { top: 13%; left: 4%; }
-    .love-note.n2 { top: 15%; right: 4%; }
-    .love-note.n3 { bottom: 29%; left: 4%; }
-    .love-note.n4 { bottom: 28%; right: 4%; }
+  .start-button,
+  .sunflower {
+    width: 180px;
+    height: 180px;
   }
+
+  .galaxy {
+    width: 92vw;
+    height: 92vw;
+    top: 39%;
+  }
+
+  .panel {
+    /* Subimos un poquito el primer panel para que no tape las flechas */
+    bottom: 12%; 
+    padding: 16px 16px;
+  }
+  
+  .nav-arrow {
+    /* Bajamos las flechas y aseguramos que estén por encima */
+    bottom: 3%; 
+    width: 45px;
+    height: 45px;
+    font-size: 1.4rem;
+    z-index: 30; 
+  }
+
+  #secondPanel {
+    max-height: 75vh;
+    padding: 20px 15px; /* Menos espacio a los costados para que entre más texto */
+  }
+
+  .love-note {
+    max-width: 140px;
+    font-size: 0.82rem;
+    padding: 8px 11px;
+    z-index: 2; /* Para que no queden por encima de la carta al abrirla */
+  }
+
+  .love-note.n1 { top: 10%; left: 2%; }
+  .love-note.n2 { top: 12%; right: 2%; }
+  .love-note.n3 { bottom: 32%; left: 2%; }
+  .love-note.n4 { bottom: 30%; right: 2%; }
+}
 </style>
 </head>
 <body>
