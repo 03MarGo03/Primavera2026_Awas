@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primavera 26 Awas</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg: #03050f;
+    --bg-soft: #0b1230;
+    --gold: #ffd95f;
+    --gold-2: #f4b400;
+    --cream: #fff7d4;
+    --brown: #4f2a16;
+    --brown-deep: #241108;
+    --sky: #7ad8ff;
+    --pink: #ff9acb;
+    --text: #fff9ec;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at 50% 15%, rgba(82, 103, 210, 0.30), transparent 24%),
+      radial-gradient(circle at 50% 40%, #111834 0%, #090e22 38%, var(--bg) 76%),
+      linear-gradient(180deg, #060a18 0%, var(--bg) 100%);
+  }
+
+  body {
+    position: relative;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+  }
+
+  .intro {
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 24px;
+    background:
+      radial-gradient(circle at center, rgba(255, 217, 95, 0.08), transparent 22%),
+      linear-gradient(180deg, rgba(3, 5, 14, 0.98), rgba(3, 5, 15, 0.99));
+    transition: opacity 0.9s ease, visibility 0.9s ease;
+  }
+
+  .intro.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .intro-box {
+    max-width: 760px;
+  }
+
+  .eyebrow {
+    margin: 0 0 12px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: var(--gold);
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(2.9rem, 8vw, 5.9rem);
+    line-height: 0.9;
+    text-shadow: 0 0 24px rgba(255, 217, 95, 0.16);
+  }
+
+  .title span {
+    display: block;
+  }
+
+  .start-button {
+    margin: 28px auto 10px;
+    width: 220px;
+    height: 220px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform 0.28s ease;
+  }
+
+  .start-button:hover {
+    transform: scale(1.05);
+  }
+
+  .start-note {
+    margin: 10px 0 0;
+    color: rgba(255, 249, 236, 0.82);
+    font-size: 1rem;
+  }
+
+  .scene {
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+
+  .scene.active {
+    opacity: 1;
+  }
+
+  .stars,
+  .flowers-rain,
+  .sparkles,
+  .love-notes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .nebula::before,
+  .nebula::after {
+    content: "";
+    position: absolute;
+    width: 42vmax;
+    height: 42vmax;
+    border-radius: 50%;
+    filter: blur(44px);
+    opacity: 0.22;
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+
+  .nebula::before {
+    top: -14vmax;
+    left: -12vmax;
+    background: radial-gradient(circle, rgba(255, 154, 203, 0.42), transparent 62%);
+  }
+
+  .nebula::after {
+    right: -14vmax;
+    bottom: -16vmax;
+    background: radial-gradient(circle, rgba(122, 216, 255, 0.32), transparent 62%);
+    animation-duration: 18s;
+  }
+
+  .galaxy {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    width: min(76vmin, 580px);
+    height: min(76vmin, 580px);
+    transform: translate(-50%, -50%);
+  }
+
+  .glow-ring {
+    position: absolute;
+    inset: 10%;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, rgba(255, 247, 214, 0.16) 0 16%, rgba(255, 217, 95, 0.20) 22%, rgba(255, 154, 203, 0.10) 36%, rgba(122, 216, 255, 0.06) 48%, rgba(0, 0, 0, 0) 70%);
+    animation: pulse 5.5s ease-in-out infinite;
+  }
+
+  .orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    transform: translate(-50%, -50%);
+  }
+
+  .orbit.o1 { width: 38%; height: 38%; }
+  .orbit.o2 { width: 62%; height: 62%; }
+  .orbit.o3 { width: 84%; height: 84%; }
+
+  .orbit-spin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    animation: spin linear infinite;
+  }
+
+  .orbit-spin.s1 { animation-duration: 10s; }
+  .orbit-spin.s2 { animation-duration: 16s; animation-direction: reverse; }
+  .orbit-spin.s3 { animation-duration: 22s; }
+
+  .planet {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+  }
+
+  .planet.p1 {
+    width: 12px;
+    height: 12px;
+    margin-left: 19%;
+    margin-top: -6px;
+    background: var(--gold);
+    box-shadow: 0 0 18px rgba(255, 217, 95, 0.95);
+  }
+
+  .planet.p2 {
+    width: 10px;
+    height: 10px;
+    margin-left: 31%;
+    margin-top: -5px;
+    background: var(--sky);
+    box-shadow: 0 0 18px rgba(122, 216, 255, 0.95);
+  }
+
+  .planet.p3 {
+    width: 14px;
+    height: 14px;
+    margin-left: 42%;
+    margin-top: -7px;
+    background: var(--pink);
+    box-shadow: 0 0 20px rgba(255, 154, 203, 0.95);
+  }
+
+  .sunflower-scene {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .sunflower-button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+  }
+
+  .sunflower-button:hover {
+    transform: scale(1.03);
+  }
+
+  .sunflower-button.blooming .sunflower.large {
+    animation: bloomSpin 1s ease;
+  }
+
+  .panel {
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    transform: translateX(-50%);
+    width: min(92vw, 660px);
+    padding: 18px 22px;
+    text-align: center;
+    border-radius: 22px;
+    background: rgba(6, 8, 20, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(6px);
+  }
+
+  .panel h2 {
+    margin: 0;
+    font-size: clamp(2rem, 5.8vw, 4rem);
+    line-height: 0.95;
+  }
+
+  .panel h2 span {
+    display: block;
+    background: linear-gradient(90deg, #ffffff, var(--gold), var(--cream));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .panel p {
+    margin: 12px auto 0;
+    max-width: 560px;
+    font-size: clamp(0.98rem, 1.9vw, 1.08rem);
+    line-height: 1.6;
+    color: rgba(255, 249, 236, 0.78);
+  }
+
+  /* NUEVOS ESTILOS PARA LAS FLECHAS DE NAVEGACIÓN Y TRANSICIONES */
+  .nav-arrow {
+    position: absolute;
+    bottom: 8%;
+    background: rgba(255, 217, 95, 0.15);
+    border: 1px solid rgba(255, 217, 95, 0.4);
+    color: var(--gold);
+    font-size: 1.8rem;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: opacity 1s ease, visibility 1s ease, transform 0.3s ease, background 0.3s ease;
+    backdrop-filter: blur(4px);
+    z-index: 10;
+  }
+
+  .nav-arrow:hover {
+    transform: scale(1.1);
+    background: rgba(255, 217, 95, 0.3);
+    box-shadow: 0 0 15px rgba(255, 217, 95, 0.4);
+  }
+
+  .next-arrow {
+    right: 5%;
+  }
+
+  .prev-arrow {
+    left: 5%;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .fade-out {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden;
+    transition: opacity 1s ease, visibility 1s ease;
+  }
+
+  .fade-in {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+  }
+
+  #secondPanel {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    top: 50%;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    background: rgba(6, 8, 20, 0.55);
+    transition: opacity 1.2s ease 0.3s, visibility 1.2s ease 0.3s;
+  }
+
+  /* ------------------- */
+
+  .love-note {
+    position: absolute;
+    max-width: 180px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 249, 236, 0.9);
+    font-size: 0.94rem;
+    line-height: 1.3;
+    text-align: center;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(6px);
+    animation: noteFloat 6s ease-in-out infinite;
+  }
+
+  .love-note.n1 { top: 16%; left: 9%; }
+  .love-note.n2 { top: 20%; right: 8%; animation-delay: 1.2s; }
+  .love-note.n3 { bottom: 23%; left: 8%; animation-delay: 2.2s; }
+  .love-note.n4 { bottom: 20%; right: 8%; animation-delay: 3s; }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    animation: twinkle ease-in-out infinite alternate;
+  }
+
+  .flower-drop {
+    position: absolute;
+    top: -15vh;
+    font-size: 30px;
+    animation: fall linear forwards;
+    filter: drop-shadow(0 0 8px rgba(255, 217, 95, 0.45));
+  }
+
+  .spark {
+    position: absolute;
+    font-size: 16px;
+    animation: float 4s ease-in-out infinite;
+    opacity: 0.78;
+  }
+
+  .s-a { top: 18%; left: 14%; }
+  .s-b { top: 24%; right: 15%; animation-delay: 1s; }
+  .s-c { bottom: 24%; left: 12%; animation-delay: 2s; }
+  .s-d { bottom: 18%; right: 12%; animation-delay: 1.5s; }
+
+  .sunflower {
+    width: 220px;
+    height: 220px;
+    filter: drop-shadow(0 0 18px rgba(255, 217, 95, 0.22));
+  }
+
+  .sunflower.large {
+    width: min(44vmin, 320px);
+    height: min(44vmin, 320px);
+    filter: drop-shadow(0 0 22px rgba(255, 217, 95, 0.18));
+  }
+
+  @keyframes spin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  @keyframes twinkle {
+    from { opacity: 0.2; transform: scale(0.75); }
+    to { opacity: 1; transform: scale(1.4); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(0.96); }
+    50% { transform: scale(1.04); }
+  }
+
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(3vmax, -2vmax, 0); }
+  }
+
+  @keyframes fall {
+    from { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+    15% { opacity: 1; }
+    to { transform: translateY(115vh) rotate(180deg); opacity: 0.92; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(0.95); }
+    50% { transform: translateY(-8px) scale(1.08); }
+  }
+
+  @keyframes noteFloat {
+    0%, 100% { transform: translateY(0px); opacity: 0.78; }
+    50% { transform: translateY(-10px); opacity: 1; }
+  }
+
+  @keyframes bloomSpin {
+    0% { transform: scale(1) rotate(0deg); }
+    35% { transform: scale(1.12) rotate(8deg); }
+    70% { transform: scale(0.98) rotate(-6deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  @media (max-width: 700px) {
+    .start-button,
+    .sunflower {
+      width: 180px;
+      height: 180px;
+    }
+
+    .galaxy {
+      width: 92vw;
+      height: 92vw;
+      top: 39%;
+    }
+
+    .panel {
+      bottom: 4%;
+      padding: 16px 16px;
+    }
+    
+    .nav-arrow {
+      bottom: 18%;
+      width: 45px;
+      height: 45px;
+      font-size: 1.4rem;
+    }
+
+    .love-note {
+      max-width: 140px;
+      font-size: 0.82rem;
+      padding: 8px 11px;
+    }
+
+    .love-note.n1 { top: 13%; left: 4%; }
+    .love-note.n2 { top: 15%; right: 4%; }
+    .love-note.n3 { bottom: 29%; left: 4%; }
+    .love-note.n4 { bottom: 28%; right: 4%; }
+  }
+</style>
+</head>
+<body>
+  <audio id="bgMusic" loop>
+    <source src="Color Your Night.mp3" type="audio/mpeg">
+  </audio>
+
+  <section class="screen intro" id="intro">
+    <div class="intro-box">
+      <p class="eyebrow">¡¡Feliz día, hermosisima!! </p>
+      <h1 class="title">
+        <span>💜AWAS💜</span>
+      </h1>
+      <button class="start-button" id="startButton" aria-label="Iniciar animaci&oacute;n">
+        <svg class="sunflower" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <radialGradient id="petalFill" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffe98d"/>
+              <stop offset="70%" stop-color="#ffd037"/>
+              <stop offset="100%" stop-color="#f4b400"/>
+            </radialGradient>
+            <radialGradient id="centerFill" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#6b3d1e"/>
+              <stop offset="100%" stop-color="#2b1409"/>
+            </radialGradient>
+          </defs>
+          <g transform="translate(100 100)">
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(0) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(22.5) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(45) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(67.5) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(90) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(112.5) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(135) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(157.5) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(180) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(202.5) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(225) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(247.5) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(270) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(292.5) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(315) translate(0 -50)"/>
+            <ellipse rx="18" ry="54" fill="url(#petalFill)" stroke="#a66d00" stroke-width="2" transform="rotate(337.5) translate(0 -50)"/>
+            <circle r="40" fill="url(#centerFill)" stroke="#1e0d06" stroke-width="4"/>
+            <circle r="28" fill="none" stroke="#8a592b" stroke-width="6" stroke-dasharray="3 7"/>
+            <circle r="18" fill="none" stroke="#9b6a35" stroke-width="5" stroke-dasharray="2 5"/>
+          </g>
+        </svg>
+      </button>
+      <p class="start-note">Tocá el girasol, es un detallito único para vos nomás 💜</p>
+    </div>
+  </section>
+
+  <main class="screen scene" id="scene">
+    <div class="nebula"></div>
+    <div class="stars" id="stars"></div>
+    <div class="flowers-rain" id="flowersRain"></div>
+    
+    <div class="love-notes" id="loveNotes">
+      <div class="love-note n1">Nunca olvides lo hermosa que sos 🌻</div>
+      <div class="love-note n2">No dudes de vos, sos muy capaz e inteligente 💜</div>
+      <div class="love-note n3">Te quiero muchisimo y tanto a mí cómo a mí corazón nos haces muy felices 👉👈</div>
+      <div class="love-note n4">Te lo recordaré todos los días, pero vos en verdad sos una increíble mujer, muy buena y trabajadora ✨</div>
+    </div>
+    
+    <div class="sparkles">
+      <div class="spark s-a">&#10024;</div>
+      <div class="spark s-b">&#127803;</div>
+      <div class="spark s-c">&#128155;</div>
+      <div class="spark s-d">&#11088;</div>
+    </div>
+
+    <div class="galaxy">
+      <div class="glow-ring"></div>
+      <div class="orbit o1"></div>
+      <div class="orbit o2"></div>
+      <div class="orbit o3"></div>
+      <div class="orbit-spin s1"><div class="planet p1"></div></div>
+      <div class="orbit-spin s2"><div class="planet p2"></div></div>
+      <div class="orbit-spin s3"><div class="planet p3"></div></div>
+      
+      <div class="sunflower-scene" id="centerFlower">
+        <button class="sunflower-button" id="sceneFlower" aria-label="Mover girasol">
+          <svg class="sunflower large" viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <radialGradient id="petalFillScene" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fff1a8"/>
+                <stop offset="70%" stop-color="#ffd037"/>
+                <stop offset="100%" stop-color="#f4b400"/>
+              </radialGradient>
+              <radialGradient id="centerFillScene" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#6b3d1e"/>
+                <stop offset="100%" stop-color="#2b1409"/>
+              </radialGradient>
+            </defs>
+            <g transform="translate(100 100)">
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(0) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(22.5) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(45) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(67.5) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(90) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(112.5) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(135) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(157.5) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(180) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(202.5) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(225) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(247.5) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(270) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(292.5) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(315) translate(0 -50)"/>
+              <ellipse rx="18" ry="54" fill="url(#petalFillScene)" stroke="#a66d00" stroke-width="2" transform="rotate(337.5) translate(0 -50)"/>
+              <circle r="40" fill="url(#centerFillScene)" stroke="#1e0d06" stroke-width="4"/>
+              <circle r="28" fill="none" stroke="#8a592b" stroke-width="6" stroke-dasharray="3 7"/>
+              <circle r="18" fill="none" stroke="#9b6a35" stroke-width="5" stroke-dasharray="2 5"/>
+            </g>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <section class="panel" id="firstPanel">
+      <p class="eyebrow">Gracias por todo lo que hacer por mí e iluminar mís días 🤗</p>
+      <h2>
+        <span>Bonita,</span>
+        <span>sos única, especial e importante para mí 💜</span>
+      </h2>
+      <p>
+       Sos el girasol más hermoso que existe 🌻
+      </p>
+    </section>
+
+    <!-- Botones de flechas -->
+    <button id="prevArrow" class="nav-arrow prev-arrow" aria-label="Mensaje anterior">&#10094;</button>
+    <button id="nextArrow" class="nav-arrow next-arrow" aria-label="Siguiente mensaje">&#10095;</button>
+
+    <section class="panel" id="secondPanel">
+      <p class="eyebrow">Un mensajito más...</p>
+      <h2>
+        <span>Para vos, bonita 💜</span>
+      </h2>
+      <p>
+        Quiero que sepas que sos muy especial en mí vida, te quiero y adoro con todo mí ser 💜. Sos una muchacha increible, buenita y adorable, de verdad te ganaste mi corazón y por eso mismo te doy todito de mí (yo bien esclavizado solito). No me voy a ir de tú lado y siempre estaré para ayudarte, acompañarte y brindarte todo mí cariño. Voy a estar con vos en los buenos y los malos momentos ✨
+      </p>
+      <p>
+        De verdad sos muy hermosa de pies a cabeza, y no solo físicamente, sino también por dentro de tú cabecita toda lokita. No me cansaré de decirtelo porque sabés que soy bien terco, pero de verdad, todito lo que hay en vos tanto en el exterior cómo en el interior a mi parecer son muy lindos y a mí me encantan 👉👈
+      </p>
+      <p>
+        Gracias por aparecer en mi vida, aunque al principio peleabamos constantemente, supimos entendernos y pudimos volver a hablar despues de todito 🤗. Amo tú existencia, amo pasar tiempo con vos, de verdad me haces reir y feliz, adoro verte en fotos y molestarte con mensajes 💜 (no me golpies por ser tan jodón)
+      </p>
+      <p>
+        No olvides cuán importante sos para mí, lo mucho que te quiero, aprecio y me gustas, eh. Te mando muchos besos y abrazos, y feliz inicio de primavera 🌻💜
+      </p>
+    </section>
+
+  </main>
+
+<script>
+  const intro = document.getElementById('intro');
+  const scene = document.getElementById('scene');
+  const startButton = document.getElementById('startButton');
+  const sceneFlower = document.getElementById('sceneFlower');
+  const stars = document.getElementById('stars');
+  const flowersRain = document.getElementById('flowersRain');
+  
+  const bgMusic = document.getElementById('bgMusic');
+
+  // Capturamos los elementos para la transición
+  const nextArrow = document.getElementById('nextArrow');
+  const prevArrow = document.getElementById('prevArrow');
+  const firstPanel = document.getElementById('firstPanel');
+  const secondPanel = document.getElementById('secondPanel');
+  const loveNotes = document.getElementById('loveNotes');
+  const centerFlower = document.getElementById('centerFlower');
+
+  const totalStars = window.innerWidth < 700 ? 90 : 170;
+  for (let i = 0; i < totalStars; i++) {
+    const star = document.createElement('div');
+    const size = Math.random() * 3 + 1;
+    star.className = 'star';
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+    star.style.boxShadow = '0 0 ' + (Math.random() * 8 + 4) + 'px rgba(255,255,255,0.92)';
+    stars.appendChild(star);
+  }
+
+  function createFlower() {
+    const flower = document.createElement('div');
+    flower.className = 'flower-drop';
+    flower.innerHTML = Math.random() > 0.25 ? '&#127803;' : '&#10024;';
+    flower.style.left = Math.random() * 100 + 'vw';
+    flower.style.animationDuration = (Math.random() * 4 + 5) + 's';
+    flower.style.fontSize = (Math.random() * 16 + 20) + 'px';
+    flowersRain.appendChild(flower);
+
+    setTimeout(() => {
+      flower.remove();
+    }, 9500);
+  }
+
+  let flowerInterval = null;
+
+  function startScene() {
+    intro.classList.add('hidden');
+    scene.classList.add('active');
+    
+    bgMusic.play().catch(error => {
+      console.log("El navegador requiere interacción previa", error);
+    });
+
+    if (!flowerInterval) {
+      flowerInterval = setInterval(createFlower, 240);
+    }
+  }
+
+  startButton.addEventListener('click', startScene);
+
+  sceneFlower.addEventListener('click', () => {
+    sceneFlower.classList.remove('blooming');
+    void sceneFlower.offsetWidth;
+    sceneFlower.classList.add('blooming');
+
+    for (let i = 0; i < 8; i++) {
+      setTimeout(createFlower, i * 90);
+    }
+  });
+
+  // Lógica para avanzar a la carta (Flecha derecha)
+  nextArrow.addEventListener('click', () => {
+    // 1. Ocultamos las cosas de la primera pantalla y la flecha derecha
+    firstPanel.classList.add('fade-out');
+    loveNotes.classList.add('fade-out');
+    centerFlower.classList.add('fade-out');
+    nextArrow.classList.add('fade-out'); 
+
+    // 2. Mostramos el panel nuevo y la flecha izquierda
+    secondPanel.classList.add('fade-in');
+    prevArrow.classList.add('fade-in');
+  });
+
+  // Lógica para regresar al principio (Flecha izquierda)
+  prevArrow.addEventListener('click', () => {
+    // 1. Ocultamos el panel de la carta y la flecha izquierda
+    secondPanel.classList.remove('fade-in');
+    prevArrow.classList.remove('fade-in');
+
+    // 2. Volvemos a mostrar todo lo de la primera pantalla
+    firstPanel.classList.remove('fade-out');
+    loveNotes.classList.remove('fade-out');
+    centerFlower.classList.remove('fade-out');
+    nextArrow.classList.remove('fade-out');
+  });
+
+</script>
+</body>
+</html>
