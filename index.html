@@ -119,11 +119,77 @@
   .stars,
   .flowers-rain,
   .sparkles,
-  .love-notes {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+  /* --- NUEVOS ESTILOS PARA LAS NOTAS INTERACTIVAS --- */
+.love-note {
+  position: absolute;
+  /* Estado inicial: un globito redondo */
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 217, 95, 0.5); /* Borde doradito */
+  color: var(--gold);
+  font-weight: bold;
+  font-size: 1.2rem;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: noteFloat 6s ease-in-out infinite;
+  z-index: 15;
+}
+
+/* Efecto al pasar el mouse por encima (en PC) */
+.love-note:hover {
+  background: rgba(255, 217, 95, 0.25);
+  box-shadow: 0 0 15px rgba(255, 217, 95, 0.4);
+}
+
+/* El texto oculto por defecto */
+.note-text {
+  display: none;
+}
+
+/* ESTADO ABIERTO: Cuando se toca la nota */
+.love-note.abierta {
+  width: auto;
+  max-width: 200px;
+  height: auto;
+  padding: 12px 16px;
+  border-radius: 20px;
+  
+  background: rgba(6, 8, 20, 0.9); /* Más oscurito para que se lea perfecto */
+  border-color: rgba(255, 154, 203, 0.6); /* Borde rosa al abrir */
+  color: rgba(255, 249, 236, 0.95);
+  font-size: 0.95rem;
+  font-weight: normal;
+}
+
+/* Mostramos el texto y ocultamos el número al abrir */
+.love-note.abierta .note-text {
+  display: block;
+  text-align: center;
+  line-height: 1.4;
+}
+.love-note.abierta .note-num {
+  display: none;
+}
+
+/* Ajuste para celulares en el estado abierto */
+@media (max-width: 700px) {
+  .love-note.abierta {
+    max-width: 145px;
+    font-size: 0.85rem;
+    padding: 10px 12px;
   }
+}
+/* --- FIN NUEVOS ESTILOS NOTAS --- */
 
   .nebula::before,
   .nebula::after {
@@ -574,11 +640,23 @@
     <div class="flowers-rain" id="flowersRain"></div>
     
     <div class="love-notes" id="loveNotes">
-      <div class="love-note n1">Nunca olvides lo hermosa que sos 🌻</div>
-      <div class="love-note n2">No dudes de vos, sos muy capaz e inteligente 💜</div>
-      <div class="love-note n3">Te quiero muchisimo y tanto a mí cómo a mí corazón nos haces muy felices 👉👈</div>
-      <div class="love-note n4">Te lo recordaré todos los días, pero vos en verdad sos una increíble mujer, muy buena y trabajadora ✨</div>
-    </div>
+  <div class="love-note n1">
+    <span class="note-num">1</span>
+    <span class="note-text">Nunca olvides lo hermosa que sos 🌻</span>
+  </div>
+  <div class="love-note n2">
+    <span class="note-num">2</span>
+    <span class="note-text">No dudes de vos, sos muy capaz e inteligente 💜</span>
+  </div>
+  <div class="love-note n3">
+    <span class="note-num">3</span>
+    <span class="note-text">Te quiero muchisimo y tanto a mí cómo a mí corazón nos haces muy felices 👉👈</span>
+  </div>
+  <div class="love-note n4">
+    <span class="note-num">4</span>
+    <span class="note-text">Te lo recordaré todos los días, pero vos en verdad sos una increíble mujer, muy buena y trabajadora ✨</span>
+  </div>
+</div>
     
     <div class="sparkles">
       <div class="spark s-a">&#10024;</div>
@@ -770,6 +848,25 @@
     centerFlower.classList.remove('fade-out');
     nextArrow.classList.remove('fade-out');
   });
+
+  // Lógica para los globitos numéricos
+const notesElements = document.querySelectorAll('.love-note');
+
+notesElements.forEach(note => {
+  note.addEventListener('click', function() {
+    // Si la nota ya está abierta, la cierra
+    if (this.classList.contains('abierta')) {
+      this.classList.remove('abierta');
+    } else {
+      // OPCIONAL: Esto cierra las demás notas abiertas antes de abrir la nueva
+      // Si querés que se puedan abrir todas a la vez, borrá la siguiente línea:
+      notesElements.forEach(n => n.classList.remove('abierta'));
+      
+      // Abre la nota que tocaste
+      this.classList.add('abierta');
+    }
+  });
+});
 
 </script>
 </body>
